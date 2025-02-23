@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SFT-Android</string>
+    <string name="rbtn_str">接收</string>
+    <string name="tbtn_str">发送</string>
+    <string name="menu_about">关于</string>
+    <string name="title_activity_transfer">发送文件</string>
+    <string name="conn_status_str_no">无连接</string>
+    <string name="connbtn_str">连接并发送</string>
+    <string name="ip_str">IP地址</string>
+    <string name="port_str">端口号</string>
+    <string name="confirm_str">确认</string>
+    <string name="autosearch_str">自动搜索</string>
+    <string name="conn_status_str_ing">连接中</string>
+    <string name="conn_status_str_done">已连接</string>
+    <string name="conn_err_str">错误</string>
+    <string name="add_FAB_str">添加文件</string>
+    <string name="select_file_str">已选择文件：</string>
+    <string name="dismiss_str">取消</string>
+    <string name="available_str">可连接主机</string>
+</resources>
