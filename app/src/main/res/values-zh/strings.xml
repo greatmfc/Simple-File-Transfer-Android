@@ -18,4 +18,7 @@
     <string name="select_file_str">已选择文件：</string>
     <string name="dismiss_str">取消</string>
     <string name="available_str">可连接主机</string>
+    <string name="success_msg_str">已成功发送！</string>
+    <string name="error_str">错误</string>
+    <string name="success_str">成功</string>
 </resources>

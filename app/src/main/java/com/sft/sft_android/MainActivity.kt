@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -51,47 +51,6 @@ class MainActivity : AppCompatActivity() {
             //AppNavigation()
             MainPage()
         }
-        /*
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        binding.buttonTransfer.setOnClickListener {
-            val intent = Intent(this, TransferActivity::class.java)
-            startActivity(intent)
-        }
-        binding.buttonReceive.setOnClickListener {
-            val intent = Intent(this, TransferActivity::class.java)
-            startActivity(intent)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main, menu);
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.about -> {
-                AlertDialog.Builder(this).apply {
-                    setTitle("About")
-                    setMessage(
-                        "Simple File Transfer Android\n" +
-                                "Developed by greatmfc."
-                    )
-                    setCancelable(false)
-                    setNegativeButton("OK") { _, _ -> }
-                    show()
-                }
-            }
-        }
-        return true
-        */
     }
 }
 
@@ -107,7 +66,7 @@ fun MainPage(
     TopAppBar(
         title = {
             Text(
-                "SFT-Android",
+                "Simple File Transfer Android",
             )
         },
         actions = {
@@ -205,7 +164,7 @@ fun CreateAlertDialog(
     onConfirmation: () -> Unit = {},
     dialogTitle: String,
     dialogText: String,
-    icon: ImageVector = Icons.Default.Done,
+    icon: ImageVector = Icons.Default.Build,
     enableDismiss: Boolean = false,
     enableConfirm: Boolean = true,
 ) {

@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ButtonDefaults
@@ -57,7 +58,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
@@ -91,6 +91,7 @@ fun TransferPage(
     var tcpSocket by remember { mutableStateOf(Socket()) }
     val udpSocket = DatagramSocket(null)
     var isError by remember { mutableStateOf(false) }
+    var isSuccess by remember { mutableStateOf(false) }
     var ableToConnect by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -155,11 +156,6 @@ fun TransferPage(
             textAlign = TextAlign.Center
         )
 
-        connectionStatus = if (tcpSocket.isConnected) {
-            R.string.conn_status_str_done
-        } else {
-            R.string.conn_status_str_no
-        }
     }
 
     //Middle column
@@ -221,6 +217,7 @@ fun TransferPage(
                         tcpSocket = Socket(ipAddress, port.toInt())
                         ipAddress = ""
                         port = ""
+                        connectionStatus = R.string.conn_status_str_done
                     } catch (e: Exception) {
                         isError = true
                         errorMessage = e.toString()
@@ -241,16 +238,24 @@ fun TransferPage(
             )
             if (isError) {
                 CreateAlertDialog(
-                    dialogTitle = "Error",
+                    dialogTitle = stringResource(R.string.error_str),
                     dialogText = errorMessage,
                     icon = Icons.Default.Warning,
                     onConfirmation = { isError = false }
                 )
             }
+            if (isSuccess) {
+                CreateAlertDialog(
+                    dialogTitle = stringResource(R.string.success_str),
+                    dialogText = fileName + stringResource(R.string.success_msg_str),
+                    icon = Icons.Default.Done,
+                    onConfirmation = { isSuccess = false }
+                )
+            }
             LaunchedEffect(selectedFileUri, tcpSocket) {
                 if (selectedFileUri != null && tcpSocket.isConnected) {
                     try {
-                        withContext(Dispatchers.IO) {
+                        CoroutineScope(Dispatchers.IO).launch {
                             val socketOutput = tcpSocket.getOutputStream()
                             val socketInput = tcpSocket.getInputStream()
                             val contentResolver = context.contentResolver
@@ -268,6 +273,7 @@ fun TransferPage(
                             tcpSocket.close()
                             connectionStatus = R.string.conn_status_str_no
                             loading = false
+                            isSuccess = true
                         }
                     } catch (e: Exception) {
                         connectionStatus = R.string.conn_status_str_no
