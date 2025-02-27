@@ -322,10 +322,8 @@ fun TransferPage(
                         udpSocket.bind(InetSocketAddress(7897))
                         val discoverHeader =
                             "sft1.0/DIS/${Build.BRAND}${Build.MODEL}/${
-                                htons(
-                                    7897
-                                )
-                            }".toByteArray()
+                                htons(7897)
+                            }\r\n".toByteArray()
                         val broadcastAddress = InetAddress.getByName("255.255.255.255")
                         var packet =
                             DatagramPacket(
