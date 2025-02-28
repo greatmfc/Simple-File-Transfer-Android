@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            //AppNavigation()
             MainPage()
         }
     }
@@ -107,6 +106,7 @@ fun MainPage(
             .padding(16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+        // Receive button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -116,8 +116,7 @@ fun MainPage(
                     .width(155.dp)
                     .height(60.dp),
                 onClick = {
-                    //navController.navigate("transfer")
-                    val intent = Intent(context, TransferActivity::class.java)
+                    val intent = Intent(context, ReceiveActivity::class.java)
                     context.startActivity(intent)
                 },
                 colors = ButtonDefaults.buttonColors(
@@ -132,6 +131,7 @@ fun MainPage(
 
         Spacer(modifier = Modifier.height(150.dp))
 
+        // Transfer button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center,
@@ -141,7 +141,6 @@ fun MainPage(
                     .width(155.dp)
                     .height(60.dp),
                 onClick = {
-                    //navController.navigate("transfer")
                     val intent = Intent(context, TransferActivity::class.java)
                     context.startActivity(intent)
                 },
@@ -207,25 +206,3 @@ fun CreateAlertDialog(
     )
 
 }
-
-/*
-@Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = "" // 默认启动 MainPage
-    ) {
-        // 定义 MainPage
-        composable("main") {
-            MainPage(navController)
-        }
-
-        // 定义 TransferPage
-        composable("transfer") {
-            TransferPage(navController)
-        }
-    }
-}
- */

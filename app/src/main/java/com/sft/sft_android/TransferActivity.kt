@@ -25,9 +25,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,6 +53,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
@@ -69,7 +70,6 @@ class TransferActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        //setContentView(R.layout.activity_transfer)
         setContent {
             TransferPage()
         }
@@ -77,6 +77,7 @@ class TransferActivity : AppCompatActivity() {
 
 }
 
+@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransferPage(
@@ -114,16 +115,13 @@ fun TransferPage(
     TopAppBar(
         title = {
             Text(
-                "Transfer",
+                stringResource(R.string.tbtn_str),
             )
         },
         navigationIcon = {
             IconButton(
                 onClick = {
-                    //navController.popBackStack()
                     (context as? Activity)?.finish()
-                    //val intent = Intent(context, MainActivity::class.java)
-                    //context.startActivity(intent)
                 }
             ) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
@@ -240,14 +238,14 @@ fun TransferPage(
                 CreateAlertDialog(
                     dialogTitle = stringResource(R.string.error_str),
                     dialogText = errorMessage,
-                    icon = Icons.Default.Warning,
+                    icon = Icons.Default.Clear,
                     onConfirmation = { isError = false }
                 )
             }
             if (isSuccess) {
                 CreateAlertDialog(
                     dialogTitle = stringResource(R.string.success_str),
-                    dialogText = fileName + stringResource(R.string.success_msg_str),
+                    dialogText = fileName + stringResource(R.string.success_transfer_msg_str),
                     icon = Icons.Default.Done,
                     onConfirmation = { isSuccess = false }
                 )
@@ -338,7 +336,7 @@ fun TransferPage(
                         udpSocket.receive(packet)
                         buf.fill(0)
                         udpSocket.receive(packet)
-                        val header = buf.toString(Charsets.US_ASCII)
+                        val header = buf.toString(Charsets.UTF_8)
                         val respondedHeader = header.split("/")
                         port =
                             respondedHeader[3].substringBefore("\r\n")

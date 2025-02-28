@@ -17,9 +17,12 @@
     <string name="conn_err_str">Error</string>
     <string name="add_FAB_str">Add file</string>
     <string name="select_file_str">"Selected file: "</string>
-    <string name="dismiss_str">Dismiss</string>
+    <string name="dismiss_str">Cancel</string>
     <string name="available_str">Available Host</string>
-    <string name="success_msg_str">" has been sent!"</string>
+    <string name="success_transfer_msg_str">" has been sent!"</string>
     <string name="error_str">Error</string>
     <string name="success_str">Success</string>
+    <string name="start_receive_str">Start receiving</string>
+    <string name="incoming_str">Incoming connection</string>
+    <string name="success_receive_msg_str">" has been received!"</string>
 </resources>
