@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SFT-Android</string>
+    <string name="app_name">Simple File Transfer</string>
     <string name="rbtn_str">Receive</string>
     <string name="tbtn_str">Transfer</string>
     <string name="menu_about">About</string>

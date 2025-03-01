@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SFT-Android</string>
+    <string name="app_name">简易文件传输</string>
     <string name="rbtn_str">接收</string>
     <string name="tbtn_str">发送</string>
     <string name="menu_about">关于</string>

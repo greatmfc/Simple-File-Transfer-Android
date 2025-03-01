@@ -36,6 +36,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,26 +49,33 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.Inet4Address
+import java.net.InetSocketAddress
 import java.net.ServerSocket
 import java.net.Socket
+import kotlin.math.min
 
 private var incomingSocket: Socket? = null
-private val tcpPortNumber = 9007
-private val udpPortNumber = 7897
+private val tcpPortNumber = (8000..65535).random()
+private const val udpPortNumber = 7897
 private val tcpSocket = ServerSocket(tcpPortNumber)
-private val udpSocket = DatagramSocket(udpPortNumber)
+private val udpSocket = DatagramSocket(null)
 
 class ReceiveActivity : AppCompatActivity() {
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!udpSocket.isBound) {
+            udpSocket.reuseAddress = true
+            udpSocket.bind(InetSocketAddress(udpPortNumber))
+        }
         enableEdgeToEdge()
         setContent {
             if (!Environment.isExternalStorageManager()) {
@@ -87,7 +95,7 @@ class ReceiveActivity : AppCompatActivity() {
 fun ReceivePage() {
     val context = LocalContext.current
     val tcpIPAddress = getWifiIpAddress(context)
-    val maxArraySize = 200000000 //300MB
+    val maxArraySize = 200000000 //200MB
     var isLoading by remember { mutableStateOf(false) }
     var isConnection by remember { mutableStateOf(false) }
     var startToReceive by remember { mutableStateOf(false) }
@@ -96,7 +104,7 @@ fun ReceivePage() {
     var startToListen by remember { mutableStateOf(false) }
     var isSuccess by remember { mutableStateOf(false) }
     var fileName by remember { mutableStateOf("") }
-    var currentProgress by remember { mutableStateOf(0f) }
+    var currentProgress by remember { mutableFloatStateOf(0f) }
 
     TopAppBar(
         title = {
@@ -227,9 +235,8 @@ fun ReceivePage() {
                                 val requestMessage =
                                     requestBuffer.toString(Charsets.UTF_8).split("/")
                                 fileName = requestMessage[2]
-                                val fileSize = requestMessage[3].substringBefore("\r\n").toInt()
+                                val fileSize = requestMessage[3].substringBefore("\r\n").toLong()
                                 incomingSocket!!.getOutputStream().write(49) //'1'
-
 
                                 val parent =
                                     Environment.getExternalStorageDirectory().path.toString()
@@ -240,15 +247,15 @@ fun ReceivePage() {
                                 val outputFileWriter = FileOutputStream(fileInstance)
                                 var bytesReceived = 0
                                 var bytesLeft = fileSize
-                                var ret = 0
+                                var ret: Int
 
                                 if (fileSize < maxArraySize) {
-                                    val bufferForFile = ByteArray(fileSize)
+                                    val bufferForFile = ByteArray(fileSize.toInt())
                                     while (bytesLeft > 0) {
                                         ret = tcpInputStream.read(
                                             bufferForFile,
                                             bytesReceived,
-                                            bytesLeft
+                                            bytesLeft.toInt()
                                         )
                                         bytesReceived += ret
                                         bytesLeft -= ret
@@ -256,29 +263,35 @@ fun ReceivePage() {
                                     }
                                     outputFileWriter.write(bufferForFile)
                                 } else {
-                                    val bufferForFile = ByteArray(maxArraySize)
-                                    var bytesWritten: Long = 0
-                                    while (true) {
-                                        var currentReturn = 0
-                                        while (ret < maxArraySize) {
-                                            currentReturn =
-                                                tcpInputStream.read(
-                                                    bufferForFile,
-                                                    ret,
-                                                    maxArraySize - ret
-                                                )
-                                            if (currentReturn <= 0) break
-                                            ret += currentReturn
-                                            if (ret + bytesWritten >= fileSize) break
+                                    val bufSize = maxArraySize / 2
+                                    val buffer = ByteArray(bufSize)
+                                    var bytesRemain = fileSize
+                                    var num = bufSize
+                                    var writeRes: Job? = null
+
+                                    while (bytesLeft > 0) {
+                                        ret = tcpInputStream.read(
+                                            buffer,
+                                            bytesReceived,
+                                            num - bytesReceived
+                                        )
+                                        bytesReceived += ret
+                                        bytesLeft -= ret
+                                        currentProgress = 1 - (bytesLeft.toFloat() / fileSize)
+                                        if (bytesReceived == bufSize) {
+                                            writeRes?.join()
+                                            val localRef = buffer.copyOf()
+                                            writeRes =
+                                                launch {
+                                                    outputFileWriter.write(localRef)
+                                                }
+                                            num = min(bufSize.toLong(), bytesLeft).toInt()
+                                            bytesRemain = bytesLeft
+                                            bytesReceived = 0
                                         }
-                                        if (currentReturn <= 0) break
-                                        outputFileWriter.write(bufferForFile, 0, ret)
-                                        bytesWritten += ret
-                                        if (bytesWritten >= fileSize) break
-                                        currentProgress = bytesWritten.toFloat() / fileSize
-                                        bufferForFile.fill(0)
-                                        ret = 0
                                     }
+                                    writeRes?.join()
+                                    outputFileWriter.write(buffer, 0, bytesRemain.toInt())
                                 }
                                 outputFileWriter.close()
                                 isSuccess = true

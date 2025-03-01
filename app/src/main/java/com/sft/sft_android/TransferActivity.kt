@@ -89,7 +89,7 @@ fun TransferPage(
     var loading by remember { mutableStateOf(false) }
     val context = LocalContext.current
     var connectionStatus by remember { mutableIntStateOf(R.string.conn_status_str_no) }
-    var tcpSocket by remember { mutableStateOf(Socket()) }
+    var tcpSocket by remember { mutableStateOf<Socket?>(null) }
     val udpSocket = DatagramSocket(null)
     var isError by remember { mutableStateOf(false) }
     var isSuccess by remember { mutableStateOf(false) }
@@ -251,11 +251,11 @@ fun TransferPage(
                 )
             }
             LaunchedEffect(selectedFileUri, tcpSocket) {
-                if (selectedFileUri != null && tcpSocket.isConnected) {
+                if (selectedFileUri != null && tcpSocket != null) {
                     try {
                         CoroutineScope(Dispatchers.IO).launch {
-                            val socketOutput = tcpSocket.getOutputStream()
-                            val socketInput = tcpSocket.getInputStream()
+                            val socketOutput = tcpSocket!!.getOutputStream()
+                            val socketInput = tcpSocket!!.getInputStream()
                             val contentResolver = context.contentResolver
                             val fileInput = contentResolver.openInputStream(selectedFileUri!!)
                             val request = "sft1.0/FIL/$fileName/$fileSize\r\n"
@@ -268,7 +268,8 @@ fun TransferPage(
                                     input.copyTo(output)
                                 }
                             }
-                            tcpSocket.close()
+                            tcpSocket!!.close()
+                            tcpSocket = null
                             connectionStatus = R.string.conn_status_str_no
                             loading = false
                             isSuccess = true
