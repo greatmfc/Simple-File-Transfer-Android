@@ -4,10 +4,10 @@ An interactive android application that supports both receiving and sending spec
 
 # Installation
 
-1. Download the apk file and install on your android device. (Not available yet)
+1. Download the apk file and install on your android device.
 2. Follow the official building guidelines from google. To build or deploy this project.
    [Build your app from the command line](https://developer.android.com/build/building-cmdline)
 
-# Screenshots
+# Example
 
-![](./pics/pic1.png)![](./pics/pic2.png)![](./pics/pic3.png)
+![](./pics/sft-android.gif)
